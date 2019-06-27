@@ -1,31 +1,43 @@
 const { GraphQLServer } = require('graphql-yoga');
 
-let links = [{
-    id: 'link-0',
-    url: 'www.howtographql.com',
-    description: 'Fullstack tutorial for GraphQL'
+let tasks = [{
+    id: 'task-0',
+    title: 'String!',
+    description: 'String!',
+    checked: 'Boolean!',
+    category: 'cat-0'
 }]
-let idCount = links.length
+
+let categories = [{
+    id: 'cat-0',
+    name: 'Default'
+}]
+
+let idCount = tasks.length
 
 const resolvers = {
     Query: {
-        info: (parent, args) => `This is the API of a Hackernews Clone`,
-        feed: () => links
+        allTasks: () => tasks,
+        allCategories: (parent, args) => []
     },
-    Link: {
+    Task: {
         id: (parent) => parent.id,
+        title: (parent) => parent.title,
         description: (parent) => parent.description,
-        url: (parent) => parent.url
+        category: (parent) => parent.category ? parent.category : ''
     },
     Mutation: {
-        post: (parent, args) => {
-            const link = {
-                id: `link-${idCount++}`,
+        createTask: (parent, args) => {
+            args.description = args.description ? args.description : '';
+            args.categoryId = args.categoryId ? args.categoryId : 'cat-0';
+            const task = {
+                id: `task-${idCount++}`,
+                title: args.title,
                 description: args.description,
-                url: args.url
+                categoryId: args.categoryId
             };
-            links.push(link);
-            return link;
+            tasks.push(task);
+            return task;
         }
     }
 }

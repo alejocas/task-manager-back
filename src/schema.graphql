@@ -1,14 +1,33 @@
 type Query {
-    info: String!
-    feed: [Link!]!
+    allTasks(categoryId: ID): [Task!]!
+    allCategories: [Category!]
 }
 
 type Mutation {
-    post(url: String!, description: String!): Link!
+    createTask(title: String!, description: String = "", categoryId: ID): Task!
+    checkTask(id: ID!, checked: Boolean!): Task!
+    createCategory(name: String!): Category!
+
+    updateTask(id: ID!, title: String!, description: String!): Task!
+    deleteTask(id: ID!): Boolean!
+    updateCategory(id: ID!, name: String!): Category!
+    deleteCategory(id: ID!): Boolean!
 }
 
-type Link {
-    id: ID!
+type Subscription {
+    newTask: Task!
+}
+
+type Task {
+    id: ID
+    title: String!
     description: String!
-    url: String!
+    checked: Boolean!
+    category: Category
+}
+
+type Category {
+    id: ID
+    name: String!
+    tasks: [Task!]!
 }
