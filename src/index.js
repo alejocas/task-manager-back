@@ -41,7 +41,7 @@ const resolvers = {
             tasks.forEach(elem => {
                 args.id === elem.id ? exists = true : "Do nothing";
             });
-            tasks = tasks.filter(elem => elem.id === args.id);
+            tasks = tasks.filter(elem => elem.id !== args.id);
             return exists
         },
         updateTask: (parents, args) => {
