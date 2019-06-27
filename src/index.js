@@ -8,36 +8,50 @@ let tasks = [{
     category: 'cat-0'
 }]
 
-let categories = [{
-    id: 'cat-0',
-    name: 'Default'
-}]
-
 let idCount = tasks.length
 
 const resolvers = {
     Query: {
-        allTasks: () => tasks,
-        allCategories: (parent, args) => []
+        allTasks: () => tasks
     },
     Task: {
         id: (parent) => parent.id,
         title: (parent) => parent.title,
         description: (parent) => parent.description,
-        category: (parent) => parent.category ? parent.category : ''
+        checked: (parent) => parent.checked
     },
     Mutation: {
         createTask: (parent, args) => {
             args.description = args.description ? args.description : '';
-            args.categoryId = args.categoryId ? args.categoryId : 'cat-0';
             const task = {
                 id: `task-${idCount++}`,
                 title: args.title,
                 description: args.description,
-                categoryId: args.categoryId
+                checked: false
             };
             tasks.push(task);
             return task;
+        },
+        checkTask: (parent, args) => {
+            tasks = tasks.map(elem => args.id === elem.id ? elem.checked = args.checked : "Do nothing");
+            return tasks.filter(elem => args.id === elem.id)[0];
+        },
+        deleteTask: (parent, args) => {
+            let exists = false;
+            tasks.forEach(elem => {
+                args.id === elem.id ? exists = true : "Do nothing";
+            });
+            tasks = tasks.filter(elem => elem.id === args.id);
+            return exists
+        },
+        updateTask: (parents, args) => {
+            tasks = tasks.map(elem => {
+                if(args.id === elem.id) {
+                    elem.title = args.title ? args.title : elem.title;
+                    elem.description = args.description ? args.description : elem.description;
+                }
+            });
+            return tasks.filter(elem => elem.id === args.id)[0];
         }
     }
 }

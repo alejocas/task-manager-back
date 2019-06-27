@@ -1,17 +1,12 @@
 type Query {
-    allTasks(categoryId: ID): [Task!]!
-    allCategories: [Category!]
+    allTasks: [Task!]!
 }
 
 type Mutation {
-    createTask(title: String!, description: String = "", categoryId: ID): Task!
+    createTask(title: String!, description: String = ""): Task!
     checkTask(id: ID!, checked: Boolean!): Task!
-    createCategory(name: String!): Category!
-
-    updateTask(id: ID!, title: String!, description: String!): Task!
     deleteTask(id: ID!): Boolean!
-    updateCategory(id: ID!, name: String!): Category!
-    deleteCategory(id: ID!): Boolean!
+    updateTask(id: ID!, title: String, description: String): Task!
 }
 
 type Subscription {
@@ -23,11 +18,4 @@ type Task {
     title: String!
     description: String!
     checked: Boolean!
-    category: Category
-}
-
-type Category {
-    id: ID
-    name: String!
-    tasks: [Task!]!
 }
