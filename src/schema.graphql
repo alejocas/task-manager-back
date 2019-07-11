@@ -11,6 +11,7 @@ type Mutation {
 
 type Subscription {
     newTask: Task!
+    removeTask: ID!
 }
 
 type Task {

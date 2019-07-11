@@ -1,7 +1,11 @@
 const { GraphQLServer } = require('graphql-yoga');
+const { PubSub } = require('graphql-subscriptions');
+const pubsub = new PubSub();
 
+const NEW_TASK = 'NEW_TASK';
+const DELETE_TASK = 'DELETE_TASK';
 let tasks = [{
-    id: 'task-0',
+    id: 'task0',
     title: 'String!',
     description: 'String!',
     checked: 'Boolean!',
@@ -24,12 +28,13 @@ const resolvers = {
         createTask: (parent, args) => {
             args.description = args.description ? args.description : '';
             const task = {
-                id: `task-${idCount++}`,
+                id: `task${idCount++}`,
                 title: args.title,
                 description: args.description,
                 checked: false
             };
             tasks.push(task);
+            pubsub.publish(NEW_TASK, { newTask: task});
             return task;
         },
         checkTask: (parent, args) => {
@@ -42,6 +47,7 @@ const resolvers = {
                 args.id === elem.id ? exists = true : "Do nothing";
             });
             tasks = tasks.filter(elem => elem.id !== args.id);
+            pubsub.publish(DELETE_TASK, { removeTask: args.id});
             return exists
         },
         updateTask: (parents, args) => {
@@ -53,7 +59,15 @@ const resolvers = {
             });
             return tasks.filter(elem => elem.id === args.id)[0];
         }
-    }
+    },
+    Subscription: {
+        newTask: {
+            subscribe: () => pubsub.asyncIterator(NEW_TASK),
+        },
+        removeTask: {
+            subscribe: () => pubsub.asyncIterator(DELETE_TASK)
+        }
+    },
 }
 
 const server = new GraphQLServer({
